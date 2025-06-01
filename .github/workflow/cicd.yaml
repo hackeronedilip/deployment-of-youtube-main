@@ -32,3 +32,15 @@ jobs:
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.verbose=true
+      - name: set Image Tag env var
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7} >> $GITHUB_PATH
+      - name: Build Docker Image
+        run: docker build -t dilipopseng/youtube:${IMAGE_TAG} .
+      - name: Run Trivy Docker Image Scan
+        run: |
+          trivy image --exit-code 1 --severity HIGH,CRITICAL dilipopseng/youtube:${IMAGE_TAG} || true
+      - name: Push Docker Image to Docker Hub
+        run: "echo \"${{ secrets.DOCKER_PASSWORD }}\" | docker login -u \"${{ secrets.DOCKER_USERNAME }}\" --password-stdin\ndocker push dilipopseng/youtube:${IMAGE_TAG} \n"
+      - name: Replace image name
+        run: |
+          sed -i 's|image: dilipopseng/youtube:${IMAGE_TAG}|image: dilipopseng/youtube:${IMAGE_TAG}|g' kube/deployment.yml
