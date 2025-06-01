@@ -1,20 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-deployment
+  name: my-youtube
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-app
+      app: my-youtube
   template:
     metadata:
       labels:
-        app: my-app
+        app: my-youtube
     spec:
       containers:
-        - name: my-app
-          image:
+        - name: my-youtube
+          image: dilipopseng/youtube:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
 ---
@@ -24,9 +25,9 @@ metadata:
   name: my-app-service
 spec:
   selector:
-    app: my-app
+    app: my-youtube
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: NodePort
+  type: LoadBalancer
