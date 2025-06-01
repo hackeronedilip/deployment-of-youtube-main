@@ -27,7 +27,7 @@ jobs:
       - name: Run SonarQube Scanner with Debugging
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=dilipopseng_youtube \
+            -Dsonar.projectKey=Youtube-App1 \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
