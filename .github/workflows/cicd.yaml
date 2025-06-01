@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Setuping Node Environment
+      - name: Set Up Node Environment
         uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -25,16 +25,24 @@ jobs:
           unzip sonar-scanner.zip -d /opt
           echo "/opt/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_PATH
       - name: Run SonarQube Scanner with Debugging
-        run: "sonar-scanner \\\n  -Dsonar.projectKey=dilipopseng_youtube \\\n  -Dsonar.sources=. \\\n  -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \\\n  -Dsonar.login=${{ secrets.SONAR_TOKEN }} \\\n  \n"
-      - name: set Image Tag env var
-        run: echo "IMAGE_TAG=${GITHUB_SHA::7} >> $GITHUB_PATH
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=dilipopseng_youtube \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.verbose=true
+      - name: Set Image Tag from Commit SHA
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
       - name: Build Docker Image
         run: docker build -t dilipopseng/youtube:${IMAGE_TAG} .
       - name: Run Trivy Docker Image Scan
         run: |
           trivy image --exit-code 1 --severity HIGH,CRITICAL dilipopseng/youtube:${IMAGE_TAG} || true
       - name: Push Docker Image to Docker Hub
-        run: "echo \"${{ secrets.DOCKER_PASSWORD }}\" | docker login -u \"${{ secrets.DOCKER_USERNAME }}\" --password-stdin\ndocker push dilipopseng/youtube:${IMAGE_TAG} \n"
-      - name: Replace image name
         run: |
-          sed -i 's|image: dilipopseng/youtube:${IMAGE_TAG}|image: dilipopseng/youtube:${IMAGE_TAG}|g' kube/deployment.yml
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push dilipopseng/youtube:${IMAGE_TAG}
+      - name: Replace image name in Kubernetes manifest
+        run: |
+          sed -i "s|image: dilipopseng/youtube:.*|image: dilipopseng/youtube:${IMAGE_TAG}|g" kube/deployment.yml
