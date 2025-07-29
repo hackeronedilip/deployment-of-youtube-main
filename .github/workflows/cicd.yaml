@@ -19,19 +19,6 @@ jobs:
           node-version: '14'
       - name: Install Dependencies
         run: npm install
-      - name: Install SonarQube Scanner
-        run: |
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-          unzip sonar-scanner.zip -d /opt
-          echo "/opt/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_PATH
-      - name: Run SonarQube Scanner with Debugging
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=Youtube-App1 \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.verbose=true
       - name: Set Image Tag from Commit SHA
         run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
       - name: Build Docker Image
