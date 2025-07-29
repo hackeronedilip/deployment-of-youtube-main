@@ -22,7 +22,7 @@ jobs:
       - name: Set Image Tag from Commit SHA
         run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
       - name: Build Docker Image
-        run: docker build -t dilipopseng/tictac:${IMAGE_TAG} .
+        run: docker build -t devops5511/tictacapp:${IMAGE_TAG} .
       - name: Run Trivy Docker Image Scan
         run: |
           trivy image --exit-code 1 --severity HIGH,CRITICAL dilipopseng/tictac:${IMAGE_TAG} || true
