@@ -4,7 +4,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - main123
 jobs:
   build:
     runs-on: ubuntu-latest
