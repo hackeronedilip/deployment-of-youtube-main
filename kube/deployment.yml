@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: dilipopseng/tictac:8
+          image: devops5511/youtube2.0:v1
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 3000
