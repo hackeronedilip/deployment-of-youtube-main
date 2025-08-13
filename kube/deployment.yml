@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: devops5511/youtube2.0:v1
+          image: devops5511/youtube2.0:v2
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
